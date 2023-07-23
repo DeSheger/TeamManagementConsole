@@ -1,0 +1,10 @@
+services:
+  backend:
+    image: postgres:latest
+    container_name: teammanagementdb
+    restart: always
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+    ports:
+        - "5432:5432"
