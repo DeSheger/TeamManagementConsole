@@ -9,3 +9,9 @@ DataContext context = new DataContext();
 var loginScreen = new LoginScreen(context);
 
 loginScreen.Screen();
+
+if(LoginScreen.session != null)
+{
+    var mainScreen = new MainScreen(LoginScreen.session);
+    mainScreen.Screen();
+}

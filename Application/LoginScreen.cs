@@ -15,16 +15,17 @@ namespace LearningWithDotNet.Application
         private string Email;
         private string Password;
         public DataContext context;
+        public static User? session;
         public LoginScreen(DataContext _context)
         {
             context = _context;
         }
-        public void Screen()
+        public int Screen()
         {
             Console.Clear();
             Console.WriteLine("1. Login");
             Console.WriteLine("2. Register");
-            int key = Convert.ToInt16(Console.ReadLine());
+            int? key = Convert.ToInt16(Console.ReadLine());
             switch (key) 
             {
                 case 1:
@@ -38,9 +39,10 @@ namespace LearningWithDotNet.Application
                     Screen();
                     break;
             }
+            return 0;
         }
 
-        public void Login()
+        public int Login()
         {
             Console.Clear();
             Console.WriteLine("Type name");
@@ -50,13 +52,21 @@ namespace LearningWithDotNet.Application
 
             var loggedUser = context.Users
                 .Where(user => user.Name == Name)
-                .Include(user => user.Password == Password);
-
-            Console.WriteLine(loggedUser);
-           
+                .Where(user => user.Password == Password)
+                .FirstOrDefault();
+            if(loggedUser == null) 
+            {
+                Console.WriteLine("Login incorrect");
+                Console.ReadKey();
+                return Screen();
+            }
+            Console.WriteLine(loggedUser.Name + loggedUser.Email + loggedUser.Password);
+            session = loggedUser;
+            Console.ReadKey();
+           return 0;
         }
 
-        public void Register()
+        public int Register()
         {
             Console.Clear();
             Console.WriteLine("Type name");
@@ -65,7 +75,18 @@ namespace LearningWithDotNet.Application
             Email = Convert.ToString(Console.ReadLine());
             Console.WriteLine("Type password");
             Password = Convert.ToString(Console.ReadLine());
-       
+
+            var existUser = context.Users
+                .Where(user => user.Name == Name)
+                .FirstOrDefault();
+
+            if(existUser != null) 
+            { 
+                Console.WriteLine("This user already exist");
+                Console.ReadKey();
+                return Screen();
+            };
+
             Console.ReadKey();
             User registerUser = new User()
             {
@@ -77,6 +98,7 @@ namespace LearningWithDotNet.Application
             context.SaveChanges();
             Console.WriteLine("Succesfull registred - enter key to back");
             Console.ReadKey();
+            return Screen();
         }
     }
 }
